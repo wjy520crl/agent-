@@ -133,8 +133,8 @@ const executeTask = async () => {
   isLoading.value = true;
   
   try {
-    // 调用后端API
-    const response = await fetch('http://localhost:8000/api/execute', {
+    // 调用后端API（通过Vite代理）
+    const response = await fetch('/api/execute', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -162,7 +162,7 @@ const executeTask = async () => {
 // 检查系统状态
 const checkSystemStatus = async () => {
   try {
-    const response = await fetch('http://localhost:8000/api/health');
+    const response = await fetch('/api/health');
     if (response.ok) {
       systemStatus.value.api = true;
     } else {
