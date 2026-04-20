@@ -8,5 +8,5 @@ API_CONFIG = {
 
 # 模型配置
 MODEL_CONFIG = {
-    "default_model": "claude-3-opus-20240229"
+    "default_model": "mnimax-2.7"
 }
