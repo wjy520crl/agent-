@@ -9,6 +9,15 @@ class SupervisorAgent(Agent):
         self.agents = {}
         self.shared_memory = SharedMemory()
         self.llm_client = LLMClient()
+        
+        # 自动注册所有专业Agent
+        from .agents.research_agent import ResearchAgent
+        from .agents.code_agent import CodeAgent
+        from .agents.writing_agent import WritingAgent
+        
+        self.register_agent(ResearchAgent())
+        self.register_agent(CodeAgent())
+        self.register_agent(WritingAgent())
     
     def register_agent(self, agent: Agent):
         """注册专业Agent"""

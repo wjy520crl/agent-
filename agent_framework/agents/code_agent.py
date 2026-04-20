@@ -15,10 +15,59 @@ class CodeAgent(Agent):
         # 生成代码
         code = self.generate_code(task)
         
-        # 执行代码
-        result = self.execute_code(code)
+        # 优化代码
+        optimized_code = self.optimize_code(code)
         
-        return f"Generated Code:\n```python\n{code}\n```\n\nExecution Result:\n{result}"
+        # 执行代码
+        result = self.execute_code(optimized_code)
+        
+        # 生成测试代码
+        test_code = self.generate_test_code(optimized_code, task)
+        
+        return f"Generated Code:\n```python\n{code}\n```\n\nOptimized Code:\n```python\n{optimized_code}\n```\n\nExecution Result:\n{result}\n\nTest Code:\n```python\n{test_code}\n```"
+    
+    def optimize_code(self, code: str) -> str:
+        """优化代码"""
+        prompt = f"""
+        You are a code agent. Optimize the following Python code for better performance, readability, and maintainability:
+        
+        {code}
+        
+        Provide only the optimized code, no explanations. Make sure the code is correct and complete.
+        """
+        
+        response = self.llm_client.generate(
+            messages=[
+                {"role": "system", "content": "You are a professional code agent with expertise in Python programming and code optimization."},
+                {"role": "user", "content": prompt}
+            ],
+            model=self.llm_model
+        )
+        
+        return response
+    
+    def generate_test_code(self, code: str, task: str) -> str:
+        """生成测试代码"""
+        prompt = f"""
+        You are a code agent. Generate Python test code for the following code:
+        
+        {code}
+        
+        The code was generated to solve this task:
+        {task}
+        
+        Provide only the test code, no explanations. Include necessary imports and test cases to verify the code works correctly.
+        """
+        
+        response = self.llm_client.generate(
+            messages=[
+                {"role": "system", "content": "You are a professional code agent with expertise in Python testing."},
+                {"role": "user", "content": prompt}
+            ],
+            model=self.llm_model
+        )
+        
+        return response
     
     def generate_code(self, task: str) -> str:
         """生成代码"""
