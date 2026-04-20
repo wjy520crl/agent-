@@ -1,0 +1,15 @@
+# 核心依赖
+openai==1.30.0
+langchain==0.2.24
+langgraph==0.1.34
+
+# 工具依赖
+requests==2.31.0
+beautifulsoup4==4.12.3
+
+# 测试依赖
+pytest==7.4.3
+
+# 开发工具
+black==23.12.1
+flake8==6.1.0
