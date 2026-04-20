@@ -1,73 +1,142 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" style="color-scheme: dark;">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>多Agent架构测试表单</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Lora:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --dark: #141413;
+            --light: #faf9f5;
+            --mid-gray: #b0aea5;
+            --light-gray: #e8e6dc;
+            --orange: #d97757;
+            --blue: #6a9bcc;
+            --green: #788c5d;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Lora', Georgia, serif;
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
-            background-color: #f4f4f4;
+            background-color: var(--dark);
+            color: var(--light);
         }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Poppins', Arial, sans-serif;
+            font-weight: 600;
+        }
+
         .container {
-            background-color: white;
+            background-color: var(--dark);
             padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--mid-gray);
         }
+
         h1 {
             text-align: center;
-            color: #333;
+            color: var(--light);
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--light) 0%, var(--orange) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
+
         form {
             display: flex;
             flex-direction: column;
             gap: 20px;
         }
+
         .form-group {
             display: flex;
             flex-direction: column;
             gap: 8px;
         }
+
         label {
-            font-weight: bold;
-            color: #555;
+            font-weight: 500;
+            color: var(--light);
         }
+
         input[type="text"], textarea, select {
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            padding: 12px;
+            background: var(--dark);
+            border: 1px solid var(--mid-gray);
+            border-radius: 8px;
             font-size: 16px;
+            color: var(--light);
+            font-family: inherit;
+            transition: border-color 0.3s ease;
         }
+
+        input[type="text"]:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--orange);
+            box-shadow: 0 0 0 3px rgba(217, 119, 87, 0.1);
+        }
+
         textarea {
             resize: vertical;
             min-height: 150px;
         }
+
         button {
             padding: 12px 20px;
-            background-color: #4CAF50;
+            background-color: var(--orange);
             color: white;
             border: none;
-            border-radius: 4px;
+            border-radius: 8px;
             font-size: 16px;
+            font-weight: 600;
             cursor: pointer;
+            transition: background 0.3s ease, transform 0.3s ease;
         }
+
         button:hover {
-            background-color: #45a049;
+            background-color: #c76645;
+            transform: translateY(-2px);
         }
+
+        button:focus {
+            outline: 2px solid #c76645;
+            outline-offset: 2px;
+        }
+
         .result {
             margin-top: 30px;
             padding: 20px;
-            background-color: #f9f9f9;
-            border-radius: 4px;
-            border-left: 4px solid #4CAF50;
+            background-color: var(--dark);
+            border-radius: 8px;
+            border-left: 4px solid var(--orange);
+            border: 1px solid var(--mid-gray);
         }
+
         .result h2 {
             margin-top: 0;
-            color: #333;
+            color: var(--orange);
+        }
+
+        .result pre {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 6px;
+            padding: 1rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+            border: 1px solid var(--mid-gray);
+            color: var(--light);
+        }
+
+        .result code {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
         }
     </style>
 </head>
