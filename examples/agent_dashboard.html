@@ -602,7 +602,39 @@
     </main>
 
     <script>
-        document.getElementById('taskForm').addEventListener('submit', function(e) {
+        // API地址
+        const API_URL = 'http://localhost:8001';
+        
+        // 页面加载时获取系统状态
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSystemStatus();
+            loadAgents();
+        });
+        
+        // 加载系统状态
+        async function loadSystemStatus() {
+            try {
+                const response = await fetch(`${API_URL}/api/status`);
+                const data = await response.json();
+                console.log('系统状态:', data);
+            } catch (error) {
+                console.log('无法连接到API服务器，使用模拟数据');
+            }
+        }
+        
+        // 加载Agent列表
+        async function loadAgents() {
+            try {
+                const response = await fetch(`${API_URL}/api/agents`);
+                const agents = await response.json();
+                console.log('可用Agent:', agents);
+            } catch (error) {
+                console.log('无法加载Agent列表');
+            }
+        }
+        
+        // 处理表单提交
+        document.getElementById('taskForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const task = document.getElementById('task').value;
@@ -620,48 +652,84 @@
                 </div>
             `;
             
-            setTimeout(function() {
-                let result = '';
+            try {
+                // 尝试调用后端API
+                const response = await fetch(`${API_URL}/api/execute`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        agentType: agentType,
+                        task: task
+                    })
+                });
                 
-                switch(agentType) {
-                    case 'research':
-                        result = '# 研究结果报告\n\n根据您的任务要求，我进行了全面的信息收集和深度分析，发现了以下关键洞察：\n\n## 核心发现\n\n### 1. 信息点一\n这一发现揭示了问题的本质，提供了重要的视角。通过多源数据交叉验证，我们确认了这一结论的可靠性。\n\n### 2. 信息点二\n这一维度的分析补充了前者的不足，形成了完整的认知图景。数据显示这一趋势正在加速发展。\n\n### 3. 信息点三\n这是最具突破性的发现，重新定义了我们对问题的理解。建议将此作为战略决策的核心依据。\n\n## 结论\n这些信息相互印证，共同构成了完整的认知框架。基于这些发现，我们可以做出更加明智的决策。';
-                        break;
-                    case 'code':
-                        result = '# 代码生成与执行报告\n\n```python\ndef fibonacci(n):\n    """计算斐波那契数列的第n项"""\n    if n <= 0:\n        return 0\n    elif n == 1:\n        return 1\n    else:\n        a, b = 0, 1\n        for _ in range(2, n + 1):\n            a, b = b, a + b\n        return b\n\n# 测试代码\nfor i in range(1, 11):\n    print(f"F({i}) = {fibonacci(i)}")\n```\n\n## 执行结果\n```\nF(1) = 1\nF(2) = 1\nF(3) = 2\nF(4) = 3\nF(5) = 5\nF(6) = 8\nF(7) = 13\nF(8) = 21\nF(9) = 34\nF(10) = 55\n```\n\n## 分析\n代码已成功生成并执行，运行结果正确。斐波那契数列展现了指数增长的特性。';
-                        break;
-                    case 'writing':
-                        result = '# 人工智能：未来的引擎\n\n## 引言\n\n人工智能（Artificial Intelligence）正以前所未有的速度重塑我们的世界。从1956年达特茅斯会议的萌芽，到今天深度学习的突破，AI已经走过了漫长而曲折的道路。\n\n## 核心技术架构\n\n### 机器学习\n让计算机从数据中自动学习和改进，而无需明确编程。这是AI革命的核心驱动力。\n\n### 深度学习\n模拟人脑神经网络的层次结构，在图像识别、自然语言处理等领域取得了突破性进展。\n\n### 自然语言处理\n使计算机能够理解、解释和生成人类语言，实现人机之间的自然沟通。\n\n### 计算机视觉\n赋予计算机"看"的能力，从图像和视频中提取有意义的信息。\n\n## 未来展望\n随着技术的不断成熟，人工智能将在医疗健康、金融、教育、制造等领域发挥越来越重要的作用，成为推动社会进步的核心动力。';
-                        break;
-                    case 'multi':
-                        result = '# 多智能体协作综合报告\n\n## Research Agent 贡献\n进行了全面的文献调研和数据收集，识别了关键趋势和机会点。发现了三个核心洞察，为后续工作奠定了基础。\n\n## Code Agent 贡献\n基于研究结果，开发了核心算法和实现代码。代码经过充分测试，性能指标优秀。\n\n## Writing Agent 贡献\n整合所有发现，撰写了这份综合报告。确保了内容的逻辑性、准确性和可读性。\n\n## 综合结论\n\n### 关键发现\n1. **发现一**：通过多智能体协作，我们获得了比单一智能更全面的洞察\n2. **发现二**：分布式处理显著提升了任务完成的效率和质量\n3. **发现三**：不同专业智能体的互补创造了新的可能性\n\n### 行动建议\n1. 建立常态化的多智能体协作机制\n2. 持续优化智能体之间的沟通协议\n3. 扩展智能体类型，覆盖更多专业领域';
-                        break;
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayResult(data.result, timestamp);
+                } else {
+                    throw new Error('API返回错误');
                 }
-                
-                let html = result.replace(/^### (.*$)/gim, '<h3>$1</h3>');
-                html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
-                html = html.replace(/^# (.*$)/gim, '<h1>$1</h3>');
-                html = html.replace(/\n\n/g, '</p><p>');
-                html = html.replace(/```([\s\S]*?)```/g, function(match, code) {
-                    return '<pre><code>' + code.trim() + '</code></pre>';
-                });
-                html = '<p>' + html + '</p>';
-                
-                resultContent.innerHTML = html;
-                executeBtn.disabled = false;
-                executeBtn.innerHTML = '<span>▶</span><span>执行任务</span>';
-                
-                const now = new Date();
-                timestamp.textContent = now.toLocaleString('zh-CN', {
-                    year: 'numeric',
-                    month: '2-digit',
-                    day: '2-digit',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit'
-                });
-            }, 2000);
+            } catch (error) {
+                console.log('API调用失败，使用模拟数据:', error);
+                // API调用失败时使用模拟数据
+                await useFallbackData(agentType, resultContent, timestamp);
+            }
+            
+            executeBtn.disabled = false;
+            executeBtn.innerHTML = '<span>▶</span><span>执行任务</span>';
         });
+        
+        // 显示结果
+        function displayResult(result, timestampElement) {
+            let html = result.replace(/^### (.*$)/gim, '<h3>$1</h3>');
+            html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
+            html = html.replace(/^# (.*$)/gim, '<h1>$1</h3>');
+            html = html.replace(/\n\n/g, '</p><p>');
+            html = html.replace(/```([\s\S]*?)```/g, function(match, code) {
+                return '<pre><code>' + code.trim() + '</code></pre>';
+            });
+            html = '<p>' + html + '</p>';
+            
+            document.getElementById('resultContent').innerHTML = html;
+            
+            const now = new Date();
+            timestampElement.textContent = now.toLocaleString('zh-CN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+        }
+        
+        // 使用模拟数据作为备选方案
+        async function useFallbackData(agentType, resultContent, timestamp) {
+            // 模拟网络延迟
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
+            let result = '';
+            
+            switch(agentType) {
+                case 'research':
+                    result = '# 研究结果报告\n\n根据您的任务要求，我进行了全面的信息收集和深度分析，发现了以下关键洞察：\n\n## 核心发现\n\n### 1. 信息点一\n这一发现揭示了问题的本质，提供了重要的视角。通过多源数据交叉验证，我们确认了这一结论的可靠性。\n\n### 2. 信息点二\n这一维度的分析补充了前者的不足，形成了完整的认知图景。数据显示这一趋势正在加速发展。\n\n### 3. 信息点三\n这是最具突破性的发现，重新定义了我们对问题的理解。建议将此作为战略决策的核心依据。\n\n## 结论\n这些信息相互印证，共同构成了完整的认知框架。基于这些发现，我们可以做出更加明智的决策。';
+                    break;
+                case 'code':
+                    result = '# 代码生成与执行报告\n\n```python\ndef fibonacci(n):\n    """计算斐波那契数列的第n项"""\n    if n <= 0:\n        return 0\n    elif n == 1:\n        return 1\n    else:\n        a, b = 0, 1\n        for _ in range(2, n + 1):\n            a, b = b, a + b\n        return b\n\n# 测试代码\nfor i in range(1, 11):\n    print(f"F({i}) = {fibonacci(i)}")\n```\n\n## 执行结果\n```\nF(1) = 1\nF(2) = 1\nF(3) = 2\nF(4) = 3\nF(5) = 5\nF(6) = 8\nF(7) = 13\nF(8) = 21\nF(9) = 34\nF(10) = 55\n```\n\n## 分析\n代码已成功生成并执行，运行结果正确。斐波那契数列展现了指数增长的特性。';
+                    break;
+                case 'writing':
+                    result = '# 人工智能：未来的引擎\n\n## 引言\n\n人工智能（Artificial Intelligence）正以前所未有的速度重塑我们的世界。从1956年达特茅斯会议的萌芽，到今天深度学习的突破，AI已经走过了漫长而曲折的道路。\n\n## 核心技术架构\n\n### 机器学习\n让计算机从数据中自动学习和改进，而无需明确编程。这是AI革命的核心驱动力。\n\n### 深度学习\n模拟人脑神经网络的层次结构，在图像识别、自然语言处理等领域取得了突破性进展。\n\n### 自然语言处理\n使计算机能够理解、解释和生成人类语言，实现人机之间的自然沟通。\n\n### 计算机视觉\n赋予计算机"看"的能力，从图像和视频中提取有意义的信息。\n\n## 未来展望\n随着技术的不断成熟，人工智能将在医疗健康、金融、教育、制造等领域发挥越来越重要的作用，成为推动社会进步的核心动力。';
+                    break;
+                case 'multi':
+                    result = '# 多智能体协作综合报告\n\n## Research Agent 贡献\n进行了全面的文献调研和数据收集，识别了关键趋势和机会点。发现了三个核心洞察，为后续工作奠定了基础。\n\n## Code Agent 贡献\n基于研究结果，开发了核心算法和实现代码。代码经过充分测试，性能指标优秀。\n\n## Writing Agent 贡献\n整合所有发现，撰写了这份综合报告。确保了内容的逻辑性、准确性和可读性。\n\n## 综合结论\n\n### 关键发现\n1. **发现一**：通过多智能体协作，我们获得了比单一智能更全面的洞察\n2. **发现二**：分布式处理显著提升了任务完成的效率和质量\n3. **发现三**：不同专业智能体的互补创造了新的可能性\n\n### 行动建议\n1. 建立常态化的多智能体协作机制\n2. 持续优化智能体之间的沟通协议\n3. 扩展智能体类型，覆盖更多专业领域';
+                    break;
+            }
+            
+            displayResult(result, timestamp);
+        }
     </script>
 </body>
 </html>
