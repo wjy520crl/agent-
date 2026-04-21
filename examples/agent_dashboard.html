@@ -3,575 +3,395 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#0a0a0a">
-    <title>Nexus | 多Agent架构系统</title>
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <title>多Agent架构系统</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg: #0a0a0a;
-            --bg-alt: #0f0f0f;
-            --bg-elevated: #141414;
-            --border: #1f1f1f;
-            --accent-primary: #00ffff;
-            --accent-secondary: #ff00ff;
-            --accent-tertiary: #ffff00;
-            --text-primary: #ffffff;
-            --text-secondary: #888888;
-            --text-muted: #555555;
-            --success: #00ff88;
-            --warning: #ffaa00;
-            --error: #ff4444;
-            --glow-primary: rgba(0, 255, 255, 0.3);
-            --glow-secondary: rgba(255, 0, 255, 0.3);
-        }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
-        ::selection {
-            background: var(--accent-primary);
-            color: var(--bg);
-        }
-
         body {
-            font-family: 'Syne', sans-serif;
-            background: var(--bg);
-            color: var(--text-primary);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #F8F6F3;
+            color: #1A1A1A;
             line-height: 1.6;
-            overflow-x: hidden;
+            display: flex;
             min-height: 100vh;
         }
 
-        /* Animated Background */
-        .bg-grid {
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: #F3EEE8;
+            border-right: 1px solid #E5E0D9;
+            padding: 24px 16px;
+            display: flex;
+            flex-direction: column;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                linear-gradient(rgba(0, 255, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 255, 255, 0.03) 1px, transparent 1px);
-            background-size: 50px 50px;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .bg-gradient {
-            position: fixed;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle at 30% 20%, rgba(0, 255, 255, 0.08) 0%, transparent 40%),
-                        radial-gradient(circle at 70% 80%, rgba(255, 0, 255, 0.06) 0%, transparent 40%);
-            animation: float 20s ease-in-out infinite;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            25% { transform: translate(2%, 2%) rotate(1deg); }
-            50% { transform: translate(0, 4%) rotate(0deg); }
-            75% { transform: translate(-2%, 2%) rotate(-1deg); }
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 3rem 2rem;
-            position: relative;
-            z-index: 1;
-        }
-
-        /* Header */
-        header {
-            margin-bottom: 5rem;
-            position: relative;
-        }
-
-        .header-decoration {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100px;
-            height: 100px;
-            border-left: 2px solid var(--accent-primary);
-            border-top: 2px solid var(--accent-primary);
-            opacity: 0.5;
-        }
-
-        .header-decoration::before {
-            content: '';
-            position: absolute;
-            top: -4px;
-            left: -4px;
-            width: 10px;
-            height: 10px;
-            background: var(--accent-primary);
-            box-shadow: 0 0 20px var(--accent-primary);
+            height: 100vh;
         }
 
         .logo {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1A1A1A;
+            margin-bottom: 32px;
             display: flex;
             align-items: center;
-            gap: 1rem;
-            margin-bottom: 2rem;
+            gap: 8px;
         }
 
         .logo-icon {
-            width: 48px;
-            height: 48px;
-            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
-            animation: rotate 10s linear infinite;
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, #8B7355, #A8907A);
+            border-radius: 6px;
         }
 
-        @keyframes rotate {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .nav-item {
+            padding: 10px 14px;
+            border-radius: 8px;
+            color: #666;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        .logo-text {
-            font-size: 2rem;
-            font-weight: 800;
-            letter-spacing: 0.2em;
-            text-transform: uppercase;
+        .nav-item:hover {
+            background: #EAE4DB;
+            color: #1A1A1A;
+        }
+
+        .nav-item.active {
+            background: #EAE4DB;
+            color: #1A1A1A;
+        }
+
+        .nav-icon {
+            font-size: 16px;
+            opacity: 0.8;
+        }
+
+        .sidebar-bottom {
+            margin-top: auto;
+            padding-top: 16px;
+            border-top: 1px solid #E5E0D9;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 24px 40px;
+        }
+
+        .header {
+            margin-bottom: 40px;
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 8px;
+        }
+
+        .breadcrumb {
+            font-size: 14px;
+            color: #999;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .breadcrumb a {
+            color: #666;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            color: #1A1A1A;
         }
 
         h1 {
-            font-size: clamp(2.5rem, 6vw, 5rem);
-            font-weight: 800;
-            margin-bottom: 1.5rem;
-            line-height: 1.1;
-            position: relative;
-            display: inline-block;
-        }
-
-        h1 span {
-            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        h1::after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            left: 0;
-            width: 100px;
-            height: 4px;
-            background: linear-gradient(90deg, var(--accent-primary), transparent);
+            font-size: 28px;
+            font-weight: 700;
+            color: #1A1A1A;
+            margin-bottom: 8px;
         }
 
         .subtitle {
-            font-size: 1.1rem;
-            color: var(--text-secondary);
-            max-width: 700px;
-            margin-top: 2rem;
-            font-weight: 400;
-            letter-spacing: 0.02em;
+            font-size: 14px;
+            color: #888;
+        }
+
+        /* Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        /* Cards */
+        .card {
+            background: #FFF;
+            border: 1px solid #E5E0D9;
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1A1A1A;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-icon {
+            font-size: 20px;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        select, textarea {
+            width: 100%;
+            padding: 12px 14px;
+            background: #F8F6F3;
+            border: 1px solid #E5E0D9;
+            border-radius: 8px;
+            color: #1A1A1A;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.2s ease;
+        }
+
+        select:focus, textarea:focus {
+            outline: none;
+            border-color: #C8B9A9;
+            background: #FFF;
+        }
+
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23666'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
+            padding-right: 40px;
+            cursor: pointer;
+        }
+
+        textarea {
+            resize: none;
+            min-height: 120px;
+            line-height: 1.6;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px 20px;
+            background: #1A1A1A;
+            color: #FFF;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            background: #333;
+            transform: translateY(-1px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            background: #999;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Status Items */
+        .status-items {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: #F8F6F3;
+            border-radius: 8px;
+        }
+
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            background: #4ADE80;
+            border-radius: 50%;
+        }
+
+        .status-info {
+            flex: 1;
+        }
+
+        .status-label {
+            font-size: 12px;
+            color: #999;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-text {
+            font-size: 14px;
+            color: #1A1A1A;
+            font-weight: 500;
         }
 
         /* Agent Grid */
         .agent-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 2rem;
-            margin-bottom: 5rem;
+            gap: 16px;
+            margin-bottom: 24px;
         }
 
         .agent-card {
-            position: relative;
-            background: var(--bg-elevated);
-            border: 1px solid var(--border);
-            padding: 2.5rem 2rem;
-            overflow: hidden;
-            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-        }
-
-        .agent-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
-            transform: scaleX(0);
-            transform-origin: left;
-            transition: transform 0.5s ease;
-        }
-
-        .agent-card:hover::before {
-            transform: scaleX(1);
+            background: #FFF;
+            border: 1px solid #E5E0D9;
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
 
         .agent-card:hover {
-            transform: translateY(-10px);
-            border-color: rgba(0, 255, 255, 0.3);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4),
-                        0 0 40px var(--glow-primary);
+            border-color: #C8B9A9;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
         }
 
-        .agent-number {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            margin-bottom: 1rem;
-            letter-spacing: 0.2em;
+        .agent-emoji {
+            font-size: 32px;
+            margin-bottom: 12px;
         }
 
-        .agent-icon-wrapper {
-            position: relative;
-            width: 70px;
-            height: 70px;
-            margin-bottom: 1.5rem;
-        }
-
-        .agent-icon-ring {
-            position: absolute;
-            inset: -5px;
-            border: 2px solid var(--border);
-            border-radius: 50%;
-            transition: all 0.5s ease;
-        }
-
-        .agent-card:hover .agent-icon-ring {
-            border-color: var(--accent-primary);
-            transform: scale(1.1);
-        }
-
-        .agent-icon {
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, var(--bg-alt), var(--bg-elevated));
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            border: 1px solid var(--border);
-        }
-
-        .agent-card h3 {
-            font-size: 1.4rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            letter-spacing: -0.02em;
-        }
-
-        .agent-card p {
-            color: var(--text-secondary);
-            font-size: 0.95rem;
-            line-height: 1.7;
-        }
-
-        /* Main Dashboard */
-        .dashboard {
-            display: grid;
-            grid-template-columns: 1.2fr 0.8fr;
-            gap: 2.5rem;
-            margin-bottom: 4rem;
-        }
-
-        .card {
-            background: var(--bg-elevated);
-            border: 1px solid var(--border);
-            padding: 3rem;
-            position: relative;
-        }
-
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, rgba(0, 255, 255, 0.02), transparent);
-            pointer-events: none;
-        }
-
-        .card-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 2.5rem;
-        }
-
-        .card-marker {
-            width: 8px;
-            height: 8px;
-            background: var(--accent-primary);
-            box-shadow: 0 0 10px var(--accent-primary);
-        }
-
-        .card h2 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-        }
-
-        /* Form */
-        .form-group {
-            margin-bottom: 2rem;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 0.75rem;
+        .agent-name {
+            font-size: 14px;
             font-weight: 600;
-            font-size: 0.9rem;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            color: var(--text-secondary);
+            color: #1A1A1A;
+            margin-bottom: 4px;
         }
 
-        select, textarea {
-            width: 100%;
-            padding: 1.25rem 1.5rem;
-            background: var(--bg-alt);
-            border: 1px solid var(--border);
-            color: var(--text-primary);
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.95rem;
-            transition: all 0.3s ease;
+        .agent-desc {
+            font-size: 13px;
+            color: #888;
+            line-height: 1.5;
         }
 
-        select:focus, textarea:focus {
-            outline: none;
-            border-color: var(--accent-primary);
-            box-shadow: 0 0 30px var(--glow-primary);
-        }
-
-        select {
-            appearance: none;
-            cursor: pointer;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2300ffff'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 1.5rem center;
-            background-size: 1.25em;
-            padding-right: 3.5rem;
-        }
-
-        textarea {
-            resize: none;
-            min-height: 180px;
-            line-height: 1.8;
-        }
-
-        .btn {
-            position: relative;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.75rem;
-            padding: 1.25rem 3rem;
-            background: transparent;
-            color: var(--accent-primary);
-            border: 2px solid var(--accent-primary);
-            font-family: 'Syne', sans-serif;
-            font-size: 1rem;
-            font-weight: 700;
-            letter-spacing: 0.15em;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            width: 100%;
-            overflow: hidden;
-        }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: var(--accent-primary);
-            transition: left 0.3s ease;
-            z-index: -1;
-        }
-
-        .btn:hover::before {
-            left: 0;
-        }
-
-        .btn:hover {
-            color: var(--bg);
-            box-shadow: 0 0 40px var(--glow-primary);
-        }
-
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .btn-icon {
-            font-size: 1.2rem;
-        }
-
-        /* System Status */
-        .status-item {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 1.5rem 0;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .status-item:last-child {
-            border-bottom: none;
-        }
-
-        .status-indicator {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: var(--success);
-            box-shadow: 0 0 15px var(--success);
-            animation: pulse 2s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.6; transform: scale(1.2); }
-        }
-
-        .status-text {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.9rem;
-            color: var(--text-primary);
-        }
-
-        .status-label {
-            display: block;
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            margin-bottom: 0.25rem;
-        }
-
-        /* Results */
-        .results {
-            background: var(--bg-elevated);
-            border: 1px solid var(--border);
-            padding: 3rem;
-            position: relative;
-        }
-
-        .results::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                repeating-linear-gradient(
-                    0deg,
-                    transparent,
-                    transparent 24px,
-                    rgba(0, 255, 255, 0.02) 24px,
-                    rgba(0, 255, 255, 0.02) 25px
-                );
-            pointer-events: none;
+        /* Results Section */
+        .results-section {
+            grid-column: 1 / -1;
         }
 
         .result-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 2.5rem;
-            position: relative;
-            z-index: 1;
-        }
-
-        .result-header h2 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
+            margin-bottom: 16px;
         }
 
         .result-timestamp {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.85rem;
-            color: var(--text-muted);
+            font-size: 13px;
+            color: #999;
+            font-family: 'SF Mono', 'Monaco', monospace;
         }
 
         .result-content {
-            position: relative;
-            z-index: 1;
-            background: var(--bg-alt);
-            border: 1px solid var(--border);
-            padding: 2.5rem;
-            min-height: 250px;
+            background: #F8F6F3;
+            border-radius: 8px;
+            padding: 20px;
+            min-height: 200px;
+            font-size: 14px;
+            color: #444;
         }
 
         .result-content h1 {
-            font-size: 2rem;
-            margin-bottom: 1.5rem;
-            color: var(--accent-primary);
-            background: none;
-            -webkit-background-clip: initial;
-            -webkit-text-fill-color: initial;
-        }
-
-        .result-content h1::after {
-            display: none;
+            font-size: 20px;
+            margin-bottom: 16px;
+            color: #1A1A1A;
         }
 
         .result-content h2 {
-            font-size: 1.5rem;
-            margin: 2rem 0 1rem 0;
-            color: var(--text-primary);
-            background: none;
-            -webkit-background-clip: initial;
-            -webkit-text-fill-color: initial;
+            font-size: 16px;
+            margin: 20px 0 10px 0;
+            color: #1A1A1A;
         }
 
         .result-content h3 {
-            font-size: 1.2rem;
-            margin: 1.5rem 0 0.75rem 0;
-            color: var(--text-secondary);
+            font-size: 14px;
+            margin: 16px 0 8px 0;
+            color: #333;
         }
 
         .result-content pre {
-            background: var(--bg);
-            padding: 1.5rem;
-            margin: 1.5rem 0;
+            background: #FFF;
+            padding: 14px;
+            border-radius: 6px;
+            border: 1px solid #E5E0D9;
             overflow-x: auto;
-            border: 1px solid var(--border);
-            border-left: 4px solid var(--accent-primary);
+            margin: 12px 0;
+            font-size: 13px;
         }
 
         .result-content code {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.9rem;
-            color: var(--accent-primary);
+            font-family: 'SF Mono', 'Monaco', monospace;
+            color: #8B7355;
         }
 
         .result-content ul, .result-content ol {
-            margin: 1.5rem 0 1.5rem 2rem;
+            margin: 12px 0 12px 20px;
         }
 
         .result-content li {
-            margin-bottom: 0.75rem;
-            color: var(--text-secondary);
+            margin-bottom: 6px;
         }
 
         .result-content p {
-            margin-bottom: 1rem;
-            color: var(--text-secondary);
+            margin-bottom: 10px;
         }
 
         /* Loading */
@@ -580,34 +400,17 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 2rem;
-            padding: 3rem;
-        }
-
-        .spinner-wrapper {
-            position: relative;
-            width: 60px;
-            height: 60px;
+            gap: 16px;
+            padding: 40px;
         }
 
         .spinner {
-            position: absolute;
-            inset: 0;
-            border: 3px solid var(--border);
-            border-top-color: var(--accent-primary);
-            border-right-color: var(--accent-secondary);
+            width: 32px;
+            height: 32px;
+            border: 3px solid #E5E0D9;
+            border-top-color: #8B7355;
             border-radius: 50%;
             animation: spin 1s linear infinite;
-        }
-
-        .spinner::before {
-            content: '';
-            position: absolute;
-            inset: 8px;
-            border: 3px solid transparent;
-            border-top-color: var(--accent-tertiary);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite reverse;
         }
 
         @keyframes spin {
@@ -615,10 +418,9 @@
         }
 
         .loading-text {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.95rem;
-            color: var(--text-secondary);
-            letter-spacing: 0.1em;
+            font-size: 14px;
+            color: #888;
+            font-weight: 500;
         }
 
         /* Responsive */
@@ -629,94 +431,119 @@
         }
 
         @media (max-width: 900px) {
-            .dashboard {
+            .content-grid {
                 grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                width: 200px;
+            }
+            
+            .main-content {
+                margin-left: 200px;
             }
         }
 
         @media (max-width: 600px) {
-            .container {
-                padding: 2rem 1.5rem;
+            .sidebar {
+                display: none;
             }
-
+            
+            .main-content {
+                margin-left: 0;
+                padding: 16px;
+            }
+            
             .agent-grid {
                 grid-template-columns: 1fr;
-            }
-
-            .card, .results {
-                padding: 2rem 1.5rem;
             }
         }
     </style>
 </head>
 <body>
-    <div class="bg-grid"></div>
-    <div class="bg-gradient"></div>
-
-    <div class="container">
-        <header>
-            <div class="header-decoration"></div>
-            <div class="logo">
-                <div class="logo-icon"></div>
-                <span class="logo-text">NEXUS</span>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">
+            <div class="logo-icon"></div>
+            <span>DeerFlow</span>
+        </div>
+        
+        <nav class="nav">
+            <div class="nav-item active">
+                <span class="nav-icon">📝</span>
+                <span>新对话</span>
             </div>
-            <h1>多Agent<span>架构系统</span></h1>
-            <p class="subtitle">利用多个专业智能体协作完成复杂任务，打破单一智能的局限，构建分布式智慧网络</p>
+            <div class="nav-item">
+                <span class="nav-icon">💬</span>
+                <span>对话</span>
+            </div>
+            <div class="nav-item">
+                <span class="nav-icon">🤖</span>
+                <span>智能体</span>
+            </div>
+        </nav>
+        
+        <div class="sidebar-bottom">
+            <div class="nav-item">
+                <span class="nav-icon">⚙️</span>
+                <span>设置和更多</span>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="header">
+            <div class="header-top">
+                <div class="breadcrumb">
+                    <a href="#">工作区</a>
+                    <span>›</span>
+                    <span>对话</span>
+                </div>
+            </div>
+            <h1>智能体</h1>
+            <p class="subtitle">创建和管理具有专属 Prompt 与能力的自定义智能体。</p>
         </header>
 
+        <!-- Agent Grid -->
         <div class="agent-grid">
-            <div class="agent-card" style="--delay: 0s;">
-                <div class="agent-number">01</div>
-                <div class="agent-icon-wrapper">
-                    <div class="agent-icon-ring"></div>
-                    <div class="agent-icon">🔍</div>
-                </div>
-                <h3>Research Agent</h3>
-                <p>信息收集与深度分析专家，从海量数据中提取洞见</p>
+            <div class="agent-card">
+                <div class="agent-emoji">🔍</div>
+                <div class="agent-name">Research Agent</div>
+                <div class="agent-desc">信息收集与深度分析专家</div>
             </div>
-            <div class="agent-card" style="--delay: 0.1s;">
-                <div class="agent-number">02</div>
-                <div class="agent-icon-wrapper">
-                    <div class="agent-icon-ring"></div>
-                    <div class="agent-icon">💻</div>
-                </div>
-                <h3>Code Agent</h3>
-                <p>代码生成与执行专家，将想法转化为可运行的程序</p>
+            <div class="agent-card">
+                <div class="agent-emoji">💻</div>
+                <div class="agent-name">Code Agent</div>
+                <div class="agent-desc">代码生成与执行专家</div>
             </div>
-            <div class="agent-card" style="--delay: 0.2s;">
-                <div class="agent-number">03</div>
-                <div class="agent-icon-wrapper">
-                    <div class="agent-icon-ring"></div>
-                    <div class="agent-icon">📊</div>
-                </div>
-                <h3>Data Agent</h3>
-                <p>数据分析与可视化专家，让数据讲述故事</p>
+            <div class="agent-card">
+                <div class="agent-emoji">📊</div>
+                <div class="agent-name">Data Agent</div>
+                <div class="agent-desc">数据分析与可视化专家</div>
             </div>
-            <div class="agent-card" style="--delay: 0.3s;">
-                <div class="agent-number">04</div>
-                <div class="agent-icon-wrapper">
-                    <div class="agent-icon-ring"></div>
-                    <div class="agent-icon">✍️</div>
-                </div>
-                <h3>Writing Agent</h3>
-                <p>内容创作与文案专家，用文字传递价值</p>
+            <div class="agent-card">
+                <div class="agent-emoji">✍️</div>
+                <div class="agent-name">Writing Agent</div>
+                <div class="agent-desc">内容创作与文案专家</div>
             </div>
         </div>
 
-        <div class="dashboard">
+        <!-- Content Grid -->
+        <div class="content-grid">
             <div class="card">
-                <div class="card-header">
-                    <div class="card-marker"></div>
-                    <h2>任务配置</h2>
+                <div class="card-title">
+                    <span>任务配置</span>
+                    <span class="card-icon">⚡</span>
                 </div>
                 <form id="taskForm">
                     <div class="form-group">
-                        <label for="agentType">选择Agent类型</label>
+                        <label for="agentType">选择智能体</label>
                         <select id="agentType" name="agentType">
                             <option value="research">Research Agent (研究专家)</option>
                             <option value="code">Code Agent (代码专家)</option>
                             <option value="writing">Writing Agent (写作专家)</option>
-                            <option value="multi">Multi-Agent (多Agent协作)</option>
+                            <option value="multi">Multi-Agent (多智能体协作)</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -724,52 +551,55 @@
                         <textarea id="task" name="task" placeholder="请输入详细的任务描述..."></textarea>
                     </div>
                     <button type="submit" class="btn" id="executeBtn">
-                        <span class="btn-icon">▶</span>
+                        <span>▶</span>
                         <span>执行任务</span>
                     </button>
                 </form>
             </div>
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-marker"></div>
-                    <h2>系统状态</h2>
-                </div>
-                <div id="systemStatus">
-                    <div class="status-item">
-                        <div class="status-indicator"></div>
-                        <div>
-                            <span class="status-label">Agent Network</span>
-                            <span class="status-text">所有Agent就绪</span>
-                        </div>
-                    </div>
-                    <div class="status-item">
-                        <div class="status-indicator"></div>
-                        <div>
-                            <span class="status-label">API Connection</span>
-                            <span class="status-text">连接稳定</span>
-                        </div>
-                    </div>
-                    <div class="status-item">
-                        <div class="status-indicator"></div>
-                        <div>
-                            <span class="status-label">System</span>
-                            <span class="status-text">运行正常</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <div class="results">
-            <div class="result-header">
-                <h2>执行结果</h2>
-                <span class="result-timestamp" id="timestamp">—</span>
+            <div class="card">
+                <div class="card-title">
+                    <span>系统状态</span>
+                    <span class="card-icon">📊</span>
+                </div>
+                <div class="status-items">
+                    <div class="status-item">
+                        <div class="status-indicator"></div>
+                        <div class="status-info">
+                            <div class="status-label">Agent Network</div>
+                            <div class="status-text">所有智能体就绪</div>
+                        </div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-indicator"></div>
+                        <div class="status-info">
+                            <div class="status-label">API Connection</div>
+                            <div class="status-text">连接稳定</div>
+                        </div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-indicator"></div>
+                        <div class="status-info">
+                            <div class="status-label">System</div>
+                            <div class="status-text">运行正常</div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div id="resultContent" class="result-content">
-                <p style="color: var(--text-muted); font-style: italic;">配置任务并点击执行，结果将显示在这里...</p>
+
+            <div class="card results-section">
+                <div class="result-header">
+                    <div class="card-title">
+                        <span>执行结果</span>
+                    </div>
+                    <span class="result-timestamp" id="timestamp">—</span>
+                </div>
+                <div id="resultContent" class="result-content">
+                    <p style="color: #999; font-style: italic;">配置任务并点击执行，结果将显示在这里...</p>
+                </div>
             </div>
         </div>
-    </div>
+    </main>
 
     <script>
         document.getElementById('taskForm').addEventListener('submit', function(e) {
@@ -782,13 +612,11 @@
             const timestamp = document.getElementById('timestamp');
             
             executeBtn.disabled = true;
-            executeBtn.innerHTML = '<span class="btn-icon">⏳</span><span>执行中...</span>';
+            executeBtn.innerHTML = '<span>⏳</span><span>执行中...</span>';
             resultContent.innerHTML = `
                 <div class="loading">
-                    <div class="spinner-wrapper">
-                        <div class="spinner"></div>
-                    </div>
-                    <span class="loading-text">PROCESSING TASK</span>
+                    <div class="spinner"></div>
+                    <span class="loading-text">正在处理任务...</span>
                 </div>
             `;
             
@@ -806,13 +634,13 @@
                         result = '# 人工智能：未来的引擎\n\n## 引言\n\n人工智能（Artificial Intelligence）正以前所未有的速度重塑我们的世界。从1956年达特茅斯会议的萌芽，到今天深度学习的突破，AI已经走过了漫长而曲折的道路。\n\n## 核心技术架构\n\n### 机器学习\n让计算机从数据中自动学习和改进，而无需明确编程。这是AI革命的核心驱动力。\n\n### 深度学习\n模拟人脑神经网络的层次结构，在图像识别、自然语言处理等领域取得了突破性进展。\n\n### 自然语言处理\n使计算机能够理解、解释和生成人类语言，实现人机之间的自然沟通。\n\n### 计算机视觉\n赋予计算机"看"的能力，从图像和视频中提取有意义的信息。\n\n## 未来展望\n随着技术的不断成熟，人工智能将在医疗健康、金融、教育、制造等领域发挥越来越重要的作用，成为推动社会进步的核心动力。';
                         break;
                     case 'multi':
-                        result = '# 多Agent协作综合报告\n\n## Research Agent 贡献\n进行了全面的文献调研和数据收集，识别了关键趋势和机会点。发现了三个核心洞察，为后续工作奠定了基础。\n\n## Code Agent 贡献\n基于研究结果，开发了核心算法和实现代码。代码经过充分测试，性能指标优秀。\n\n## Writing Agent 贡献\n整合所有发现，撰写了这份综合报告。确保了内容的逻辑性、准确性和可读性。\n\n## 综合结论\n\n### 关键发现\n1. **发现一**：通过多Agent协作，我们获得了比单一智能更全面的洞察\n2. **发现二**：分布式处理显著提升了任务完成的效率和质量\n3. **发现三**：不同专业Agent的互补创造了新的可能性\n\n### 行动建议\n1. 建立常态化的多Agent协作机制\n2. 持续优化Agent之间的沟通协议\n3. 扩展Agent类型，覆盖更多专业领域';
+                        result = '# 多智能体协作综合报告\n\n## Research Agent 贡献\n进行了全面的文献调研和数据收集，识别了关键趋势和机会点。发现了三个核心洞察，为后续工作奠定了基础。\n\n## Code Agent 贡献\n基于研究结果，开发了核心算法和实现代码。代码经过充分测试，性能指标优秀。\n\n## Writing Agent 贡献\n整合所有发现，撰写了这份综合报告。确保了内容的逻辑性、准确性和可读性。\n\n## 综合结论\n\n### 关键发现\n1. **发现一**：通过多智能体协作，我们获得了比单一智能更全面的洞察\n2. **发现二**：分布式处理显著提升了任务完成的效率和质量\n3. **发现三**：不同专业智能体的互补创造了新的可能性\n\n### 行动建议\n1. 建立常态化的多智能体协作机制\n2. 持续优化智能体之间的沟通协议\n3. 扩展智能体类型，覆盖更多专业领域';
                         break;
                 }
                 
                 let html = result.replace(/^### (.*$)/gim, '<h3>$1</h3>');
                 html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
-                html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>');
+                html = html.replace(/^# (.*$)/gim, '<h1>$1</h3>');
                 html = html.replace(/\n\n/g, '</p><p>');
                 html = html.replace(/```([\s\S]*?)```/g, function(match, code) {
                     return '<pre><code>' + code.trim() + '</code></pre>';
@@ -821,7 +649,7 @@
                 
                 resultContent.innerHTML = html;
                 executeBtn.disabled = false;
-                executeBtn.innerHTML = '<span class="btn-icon">▶</span><span>执行任务</span>';
+                executeBtn.innerHTML = '<span>▶</span><span>执行任务</span>';
                 
                 const now = new Date();
                 timestamp.textContent = now.toLocaleString('zh-CN', {
@@ -832,7 +660,7 @@
                     minute: '2-digit',
                     second: '2-digit'
                 });
-            }, 2500);
+            }, 2000);
         });
     </script>
 </body>
