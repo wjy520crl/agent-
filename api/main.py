@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 import sys
 import os
 
@@ -48,10 +48,20 @@ class TaskRequest(BaseModel):
     agent_type: str
     task: str
 
+class SmartRouteRequest(BaseModel):
+    task: str
+    use_smart_route: bool = True
+
 # 响应模型
 class TaskResponse(BaseModel):
     result: str
     agent_type: str
+
+class SmartRouteResponse(BaseModel):
+    task_type: str
+    required_agents: List[str]
+    reasoning: str
+    result: Optional[str] = None
 
 @app.post("/api/execute", response_model=TaskResponse)
 async def execute_task(request: TaskRequest):
@@ -69,6 +79,38 @@ async def execute_task(request: TaskRequest):
             raise HTTPException(status_code=400, detail="Invalid agent type")
         
         return TaskResponse(result=result, agent_type=request.agent_type)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/smart-route", response_model=SmartRouteResponse)
+async def smart_route(request: SmartRouteRequest):
+    """智能路由任务"""
+    try:
+        # 分析任务
+        task_analysis = supervisor_agent.analyze_task(request.task)
+        
+        # 如果需要执行，根据分析结果执行
+        result = None
+        if request.use_smart_route:
+            if len(task_analysis["required_agents"]) == 1:
+                # 单个Agent，直接使用该Agent
+                agent_name = task_analysis["required_agents"][0]
+                if agent_name == "research":
+                    result = research_agent.execute(request.task)
+                elif agent_name == "code":
+                    result = code_agent.execute(request.task)
+                elif agent_name == "writing":
+                    result = writing_agent.execute(request.task)
+            else:
+                # 多个Agent，使用SupervisorAgent
+                result = supervisor_agent.execute(request.task)
+        
+        return SmartRouteResponse(
+            task_type=task_analysis["task_type"],
+            required_agents=task_analysis["required_agents"],
+            reasoning=task_analysis.get("reasoning", "Task analyzed successfully"),
+            result=result
+        )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

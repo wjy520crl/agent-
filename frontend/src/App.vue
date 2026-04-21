@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <!-- 左侧线程管理 -->
+    <!-- 左侧边栏 -->
     <div class="sidebar">
       <div class="sidebar-header">
         <h1 class="app-title">Deer Flow</h1>
@@ -52,7 +52,7 @@
         <div v-if="currentThread?.messages.length === 0" class="empty-chat">
           <div class="empty-icon">💬</div>
           <h3>开始新的对话</h3>
-          <p>选择一个Agent并输入任务描述，开始与AI协作</p>
+          <p>输入任务描述，系统会智能选择合适的Agent</p>
         </div>
         <div v-else v-for="(message, index) in currentThread?.messages" :key="index" class="message-wrapper">
           <div v-if="message.role === 'user'" class="message user-message">
@@ -61,13 +61,30 @@
               <div class="message-text">{{ message.content }}</div>
               <div class="message-meta">
                 <span class="message-time">{{ message.timestamp }}</span>
-                <span class="message-agent">{{ getAgentName(message.agentType) }}</span>
+                <span class="message-agent">{{ message.agentType === 'auto' ? '智能选择' : getAgentName(message.agentType) }}</span>
               </div>
             </div>
           </div>
           <div v-else class="message ai-message">
             <div class="message-avatar">🤖</div>
             <div class="message-content">
+              <div v-if="message.smartAnalysis" class="smart-analysis">
+                <div class="analysis-header">🧠 智能路由分析</div>
+                <div class="analysis-content">
+                  <div class="analysis-item">
+                    <span class="analysis-label">任务类型:</span>
+                    <span class="analysis-value">{{ message.smartAnalysis.task_type }}</span>
+                  </div>
+                  <div class="analysis-item">
+                    <span class="analysis-label">选择Agent:</span>
+                    <span class="analysis-value">{{ message.smartAnalysis.required_agents.join(', ') }}</span>
+                  </div>
+                  <div class="analysis-item">
+                    <span class="analysis-label">原因:</span>
+                    <span class="analysis-value">{{ message.smartAnalysis.reasoning }}</span>
+                  </div>
+                </div>
+              </div>
               <div class="message-text" v-html="formatMessage(message.content)"></div>
               <div class="message-meta">
                 <span class="message-time">{{ message.timestamp }}</span>
@@ -78,14 +95,34 @@
         </div>
         <div v-if="isLoading" class="loading-message">
           <div class="loading-spinner"></div>
-          <span>AI正在生成回复...</span>
+          <span>AI正在分析并处理任务...</span>
         </div>
       </div>
 
       <!-- 输入区域 -->
       <div class="chat-input">
         <div class="input-header">
-          <select v-model="form.agentType" class="agent-select">
+          <div class="mode-selector">
+            <label class="mode-label">
+              <input 
+                type="radio" 
+                v-model="form.mode" 
+                value="auto" 
+                class="mode-radio"
+              >
+              智能选择 (推荐)
+            </label>
+            <label class="mode-label">
+              <input 
+                type="radio" 
+                v-model="form.mode" 
+                value="manual" 
+                class="mode-radio"
+              >
+              手动选择
+            </label>
+          </div>
+          <select v-if="form.mode === 'manual'" v-model="form.agentType" class="agent-select">
             <option value="research">Research Agent (研究)</option>
             <option value="code">Code Agent (代码)</option>
             <option value="writing">Writing Agent (写作)</option>
@@ -95,7 +132,7 @@
         <div class="input-container">
           <textarea 
             v-model="form.task" 
-            placeholder="输入任务描述..." 
+            :placeholder="form.mode === 'auto' ? '输入任务描述，AI会智能选择合适的Agent...' : '输入任务描述...'"
             class="input-textarea"
             @keydown.enter.exact.prevent="executeTask"
             @keydown.enter.shift="$event.target.value += '\n'"
@@ -117,6 +154,7 @@
 import { ref, computed, onMounted, nextTick } from 'vue';
 
 const form = ref({
+  mode: 'auto',
   agentType: 'research',
   task: ''
 });
@@ -188,7 +226,8 @@ const getAgentName = (agentType) => {
     research: 'Research Agent',
     code: 'Code Agent',
     writing: 'Writing Agent',
-    multi: 'Multi-Agent'
+    multi: 'Multi-Agent',
+    auto: '智能选择'
   };
   return agentMap[agentType] || agentType;
 };
@@ -215,7 +254,7 @@ const executeTask = async () => {
   const userMessage = {
     role: 'user',
     content: form.value.task,
-    agentType: form.value.agentType,
+    agentType: form.value.mode === 'auto' ? 'auto' : form.value.agentType,
     timestamp: new Date().toLocaleString()
   };
   
@@ -235,29 +274,58 @@ const executeTask = async () => {
   scrollToBottom();
   
   try {
-    // 调用后端API（通过Vite代理）
-    const response = await fetch('/api/execute', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        agent_type: userMessage.agentType,
-        task: userMessage.content
-      })
-    });
+    let data;
+    let smartAnalysis = null;
     
-    if (!response.ok) {
-      throw new Error('API调用失败');
+    if (form.value.mode === 'auto') {
+      // 使用智能路由
+      const response = await fetch('/api/smart-route', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          task: userMessage.content,
+          use_smart_route: true
+        })
+      });
+      
+      if (!response.ok) {
+        throw new Error('API调用失败');
+      }
+      
+      data = await response.json();
+      smartAnalysis = {
+        task_type: data.task_type,
+        required_agents: data.required_agents,
+        reasoning: data.reasoning
+      };
+    } else {
+      // 手动选择
+      const response = await fetch('/api/execute', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          agent_type: userMessage.agentType,
+          task: userMessage.content
+        })
+      });
+      
+      if (!response.ok) {
+        throw new Error('API调用失败');
+      }
+      
+      data = await response.json();
     }
-    
-    const data = await response.json();
     
     // 添加AI回复
     const aiMessage = {
       role: 'assistant',
       content: data.result,
-      timestamp: new Date().toLocaleString()
+      timestamp: new Date().toLocaleString(),
+      smartAnalysis: smartAnalysis
     };
     
     currentThread.value.messages.push(aiMessage);
@@ -764,6 +832,64 @@ body {
   opacity: 0.6;
   cursor: not-allowed;
   transform: none;
+}
+
+/* 模式选择器 */
+.mode-selector {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.mode-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--light);
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+
+.mode-radio {
+  accent-color: var(--primary);
+}
+
+/* 智能路由分析 */
+.smart-analysis {
+  background: rgba(0, 102, 255, 0.1);
+  border: 1px solid rgba(0, 102, 255, 0.3);
+  border-radius: var(--radius);
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.analysis-header {
+  font-weight: 600;
+  color: var(--primary);
+  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
+}
+
+.analysis-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.analysis-item {
+  display: flex;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.analysis-label {
+  font-weight: 600;
+  color: var(--mid-gray);
+  min-width: 80px;
+}
+
+.analysis-value {
+  color: var(--light);
 }
 
 /* 消息内容格式化 */

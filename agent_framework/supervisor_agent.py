@@ -27,27 +27,74 @@ class SupervisorAgent(Agent):
         """分析任务并确定需要的Agent"""
         # 使用LLM分析任务类型和所需专业知识
         prompt = f"""
-        Analyze the following task and determine:
-        1. What type of task is this? (research, code, data analysis, writing, etc.)
-        2. Which specialized agents are needed to complete this task?
-        3. How should the task be decomposed into sub-tasks?
+        Analyze the following task and provide a JSON response with the following structure:
+        {{
+            "task_type": "one of: research, code, writing, complex",
+            "required_agents": ["list of agent names needed: research, code, writing"],
+            "sub_tasks": ["list of sub-tasks if needed"],
+            "reasoning": "brief explanation of why these agents were chosen"
+        }}
+        
+        Task classification guide:
+        - "research": needs information gathering, fact checking, or topic investigation
+        - "code": needs programming, code generation, or code analysis
+        - "writing": needs content creation, editing, or text generation
+        - "complex": needs multiple types of expertise
         
         Task: {task}
         """
         
         response = self.llm_client.generate(
             messages=[
-                {"role": "system", "content": "You are a task analyzer for a multi-agent system."},
+                {"role": "system", "content": "You are a task analyzer for a multi-agent system. Respond only with valid JSON."},
                 {"role": "user", "content": prompt}
             ],
             model=self.llm_model
         )
         
-        return {
-            "task_type": "complex",
-            "required_agents": list(self.agents.keys()),
-            "sub_tasks": [task]
-        }
+        try:
+            # 尝试解析JSON响应
+            import json
+            result = json.loads(response)
+            
+            # 确保required_agents是有效的Agent列表
+            valid_agents = set(self.agents.keys())
+            result["required_agents"] = [agent for agent in result.get("required_agents", []) if agent in valid_agents]
+            
+            # 如果没有找到任何Agent，默认使用所有
+            if not result["required_agents"]:
+                result["required_agents"] = list(self.agents.keys())
+                result["task_type"] = "complex"
+            
+            return result
+        except Exception as e:
+            # 如果解析失败，使用启发式方法
+            task_lower = task.lower()
+            required_agents = []
+            
+            if any(keyword in task_lower for keyword in ["code", "program", "function", "algorithm", "python", "javascript", "bug", "debug"]):
+                required_agents.append("code")
+            
+            if any(keyword in task_lower for keyword in ["research", "search", "find", "investigate", "study", "analyze", "information"]):
+                required_agents.append("research")
+            
+            if any(keyword in task_lower for keyword in ["write", "content", "article", "essay", "document", "text", "summary", "translate"]):
+                required_agents.append("writing")
+            
+            if not required_agents:
+                required_agents = list(self.agents.keys())
+                task_type = "complex"
+            elif len(required_agents) == 1:
+                task_type = required_agents[0]
+            else:
+                task_type = "complex"
+            
+            return {
+                "task_type": task_type,
+                "required_agents": required_agents,
+                "sub_tasks": [task],
+                "reasoning": "Task analyzed heuristically"
+            }
     
     def assign_task(self, sub_task: str, agent_name: str) -> str:
         """将子任务分配给指定Agent"""
