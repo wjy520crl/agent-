@@ -19,7 +19,36 @@ class DataAgent(Agent):
         # 执行代码
         result = self.execute_code(code)
         
-        return f"Data Analysis Code:\n```python\n{code}\n```\n\nAnalysis Result:\n{result}"
+        # 生成结果解释
+        explanation = self.generate_explanation(task, code, result)
+        
+        return f"Data Analysis Code:\n```python\n{code}\n```\n\nAnalysis Result:\n{result}\n\nResult Explanation:\n{explanation}"
+    
+    def generate_explanation(self, task: str, code: str, result: str) -> str:
+        """生成结果解释"""
+        prompt = f"""
+        You are a data agent. Provide a clear and comprehensive explanation of the following data analysis results:
+        
+        Task: {task}
+        
+        Code:
+        {code}
+        
+        Result:
+        {result}
+        
+        Explain what the analysis is doing, what the results mean, and any insights or recommendations based on the results.
+        """
+        
+        response = self.llm_client.generate(
+            messages=[
+                {"role": "system", "content": "You are a professional data analyst擅长解释数据分析结果并提供有洞察力的见解。"},
+                {"role": "user", "content": prompt}
+            ],
+            model=self.llm_model
+        )
+        
+        return response
     
     def generate_data_analysis_code(self, task: str) -> str:
         """生成数据分析代码"""

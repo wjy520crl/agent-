@@ -3,21 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#0f172a">
+    <meta name="theme-color" content="#141413">
     <title>多Agent架构系统</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Lora:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #0f172a;
-            --secondary: #1e293b;
-            --accent: #3b82f6;
-            --accent-light: #60a5fa;
-            --text: #f8fafc;
-            --text-muted: #94a3b8;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --error: #ef4444;
-            --border: #334155;
+            --dark: #141413;
+            --light: #faf9f5;
+            --mid-gray: #b0aea5;
+            --light-gray: #e8e6dc;
+            --orange: #d97757;
+            --blue: #6a9bcc;
+            --green: #788c5d;
             --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
@@ -29,9 +26,9 @@
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background: var(--primary);
-            color: var(--text);
+            font-family: 'Lora', Georgia, serif;
+            background: var(--dark);
+            color: var(--light);
             line-height: 1.6;
             overflow-x: hidden;
         }
@@ -54,16 +51,20 @@
             left: -10%;
             width: 120%;
             height: 200%;
-            background: radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
+            background: radial-gradient(circle at 50% 50%, rgba(217, 119, 87, 0.1) 0%, transparent 70%);
             z-index: -1;
         }
 
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Poppins', Arial, sans-serif;
+            font-weight: 600;
+        }
+
         h1 {
-            font-family: 'Orbitron', sans-serif;
             font-size: 3rem;
             font-weight: 700;
             margin-bottom: 1rem;
-            background: linear-gradient(135deg, var(--text) 0%, var(--accent-light) 100%);
+            background: linear-gradient(135deg, var(--light) 0%, var(--orange) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -71,7 +72,7 @@
 
         .subtitle {
             font-size: 1.2rem;
-            color: var(--text-muted);
+            color: var(--mid-gray);
             max-width: 600px;
             margin: 0 auto;
         }
@@ -84,18 +85,18 @@
         }
 
         .card {
-            background: var(--secondary);
+            background: var(--dark);
             border-radius: 12px;
             padding: 2rem;
             box-shadow: var(--shadow);
-            border: 1px solid var(--border);
+            border: 1px solid var(--mid-gray);
             transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
         }
 
         .card:hover {
             transform: translateY(-5px);
             box-shadow: var(--shadow-lg);
-            border-color: var(--accent);
+            border-color: var(--orange);
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -105,10 +106,9 @@
         }
 
         .card h2 {
-            font-family: 'Orbitron', sans-serif;
             font-size: 1.5rem;
             margin-bottom: 1.5rem;
-            color: var(--accent);
+            color: var(--orange);
         }
 
         .form-group {
@@ -119,16 +119,16 @@
             display: block;
             margin-bottom: 0.5rem;
             font-weight: 500;
-            color: var(--text);
+            color: var(--light);
         }
 
         select, textarea {
             width: 100%;
             padding: 1rem;
-            background: var(--primary);
-            border: 1px solid var(--border);
+            background: var(--dark);
+            border: 1px solid var(--mid-gray);
             border-radius: 8px;
-            color: var(--text);
+            color: var(--light);
             font-family: inherit;
             font-size: 1rem;
             transition: border-color 0.3s ease;
@@ -136,8 +136,8 @@
 
         select:focus, textarea:focus {
             outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            border-color: var(--orange);
+            box-shadow: 0 0 0 3px rgba(217, 119, 87, 0.1);
         }
 
         textarea {
@@ -148,7 +148,7 @@
         .btn {
             display: inline-block;
             padding: 1rem 2rem;
-            background: var(--accent);
+            background: var(--orange);
             color: white;
             border: none;
             border-radius: 8px;
@@ -160,17 +160,17 @@
         }
 
         .btn:hover {
-            background: var(--accent-light);
+            background: #c76645;
             transform: translateY(-2px);
         }
 
         .btn:focus {
-            outline: 2px solid var(--accent-light);
+            outline: 2px solid #c76645;
             outline-offset: 2px;
         }
 
         .btn:disabled {
-            background: var(--border);
+            background: var(--mid-gray);
             cursor: not-allowed;
             transform: none;
         }
@@ -183,48 +183,44 @@
 
         .results {
             grid-column: 1 / -1;
-            background: var(--secondary);
+            background: var(--dark);
             border-radius: 12px;
             padding: 2rem;
             box-shadow: var(--shadow);
-            border: 1px solid var(--border);
+            border: 1px solid var(--mid-gray);
         }
 
         .results h2 {
-            font-family: 'Orbitron', sans-serif;
             font-size: 1.5rem;
             margin-bottom: 1.5rem;
-            color: var(--accent);
+            color: var(--orange);
         }
 
         .result-content {
-            background: var(--primary);
+            background: var(--dark);
             border-radius: 8px;
             padding: 1.5rem;
-            border: 1px solid var(--border);
+            border: 1px solid var(--mid-gray);
             min-height: 200px;
-            font-family: 'Inter', sans-serif;
+            font-family: 'Lora', Georgia, serif;
         }
 
         .result-content h1 {
             font-size: 1.8rem;
             margin-bottom: 1rem;
-            color: var(--accent);
-            font-family: 'Orbitron', sans-serif;
+            color: var(--orange);
         }
 
         .result-content h2 {
             font-size: 1.5rem;
             margin: 1.5rem 0 0.75rem 0;
-            color: var(--accent-light);
-            font-family: 'Orbitron', sans-serif;
+            color: var(--blue);
         }
 
         .result-content h3 {
             font-size: 1.2rem;
             margin: 1.2rem 0 0.5rem 0;
-            color: var(--text);
-            font-family: 'Orbitron', sans-serif;
+            color: var(--light);
         }
 
         .result-content pre {
@@ -233,13 +229,13 @@
             padding: 1rem;
             margin: 1rem 0;
             overflow-x: auto;
-            border: 1px solid var(--border);
+            border: 1px solid var(--mid-gray);
         }
 
         .result-content code {
             font-family: 'Courier New', monospace;
             font-size: 0.9rem;
-            color: var(--text);
+            color: var(--light);
         }
 
         .result-content ul, .result-content ol {
@@ -261,8 +257,8 @@
         .spinner {
             width: 24px;
             height: 24px;
-            border: 3px solid var(--border);
-            border-top: 3px solid var(--accent);
+            border: 3px solid var(--mid-gray);
+            border-top: 3px solid var(--orange);
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -280,11 +276,11 @@
         }
 
         .agent-card {
-            background: var(--secondary);
+            background: var(--dark);
             border-radius: 12px;
             padding: 1.5rem;
             box-shadow: var(--shadow);
-            border: 1px solid var(--border);
+            border: 1px solid var(--mid-gray);
             text-align: center;
             transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
         }
@@ -292,7 +288,7 @@
         .agent-card:hover {
             transform: translateY(-5px);
             box-shadow: var(--shadow-lg);
-            border-color: var(--accent);
+            border-color: var(--orange);
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -304,7 +300,7 @@
         .agent-icon {
             width: 80px;
             height: 80px;
-            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+            background: linear-gradient(135deg, var(--orange) 0%, #c76645 100%);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -314,13 +310,12 @@
         }
 
         .agent-card h3 {
-            font-family: 'Orbitron', sans-serif;
             margin-bottom: 0.5rem;
-            color: var(--text);
+            color: var(--light);
         }
 
         .agent-card p {
-            color: var(--text-muted);
+            color: var(--mid-gray);
             font-size: 0.9rem;
         }
 
